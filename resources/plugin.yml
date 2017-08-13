@@ -1,0 +1,5 @@
+name: ChestLocker
+author: zzz1999
+main: net.mcbbs.zzz1999.ChestLocker.ChestLocker
+api: ["1.0.0"]
+version: "1.0.0"
