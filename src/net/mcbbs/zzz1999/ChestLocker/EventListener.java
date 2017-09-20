@@ -60,9 +60,8 @@ public class EventListener implements Listener {
                     }
                     //this.plugin.getLogger().info("chest  "+chest.namedTag.getAllTags());
                     //this.plugin.getLogger().info("chestPair   "+ chest.namedTag.getAllTags());
-                    Map<String,Boolean> map = plugin.getLockSetting();
-                    map.remove(player.getName());
-                    plugin.setLockSetting(map);
+                    plugin.getLockSetting().remove(player.getName());
+
                     player.sendMessage(TextFormat.GRAY+"[ChestLocker] 退出锁定箱子模式");
                 }
 
@@ -101,9 +100,8 @@ public class EventListener implements Listener {
                                 tag.add(new StringTag("" ,invite));
                                 chest.namedTag.getList("Guest").setAll(tag);
                                 player.sendMessage(TextFormat.GOLD+"[ChestLocker] 已将 [ "+invite+" ] 列入共享列表");
-                                Map<String,String> map = plugin.getShareSetting();
-                                map.remove(player.getName());
-                                plugin.setShareSetting(map);
+                                plugin.getShareSetting().remove(player.getName());
+
                                 player.sendMessage(TextFormat.AQUA+"[ChestLocker] 以退出设置箱子共享模式");
                             }
                         }else{
@@ -112,9 +110,8 @@ public class EventListener implements Listener {
                             tag.add(new StringTag("",invite));
                             chest.namedTag.getList("Guest").setAll(tag);
                             player.sendMessage(TextFormat.GOLD+"[ChestLocker] 以设置共享玩家  [ "+invite+" ] .");
-                            Map<String,String> map = plugin.getShareSetting();
-                            map.remove(player.getName());
-                            plugin.setShareSetting(map);
+                            plugin.getShareSetting().remove(player.getName());
+
                             player.sendMessage(TextFormat.AQUA+"[ChestLocker] 以退出共享模式");
                         }
                     }else{
@@ -141,9 +138,8 @@ public class EventListener implements Listener {
                             chest.getInventory().onClose(p);
                         }
                         player.sendMessage(TextFormat.RED+"[ChestLocker] 你以解锁该箱子，并且删除所有共享该箱子的玩家信息");
-                        Map<String,Boolean> map = plugin.getUnLockSetting();
-                        map.remove(player.getName());
-                        plugin.setUnLockSetting(map);
+                        plugin.getUnLockSetting().remove(player.getName());
+
                         player.sendMessage(TextFormat.AQUA+"[ChestLocker] 以退出解锁箱子模式");
                     }else{
                         player.sendMessage(TextFormat.YELLOW+"[ChestLocker] 你选择了一个不属于你的箱子，你无法对此进行操作");
@@ -173,9 +169,7 @@ public class EventListener implements Listener {
                             chest.namedTag.getList("Guest").setAll(tag);
                             player.sendMessage(TextFormat.GOLD+"[ChestLocker] 以将 [ "+unshare+" ] 移除出箱子共享列表中");
                             //TODO test whether the remove/add were succeed
-                            Map<String,String> map = plugin.getUnshareSetting();
-                            map.remove(unshare);
-                            plugin.setUnshareSetting(map);
+                            plugin.getUnshareSetting().remove(unshare);
                             player.sendMessage(TextFormat.AQUA+"以退出取消箱子共享模式");
 
                         }else{
@@ -206,9 +200,7 @@ public class EventListener implements Listener {
 
                     }
                     p.sendMessage(TextFormat.LIGHT_PURPLE+"----------------");
-                    Map<String,Boolean> map = ChestLocker.getInstance().getDemandChest();
-                    map.remove(event.getPlayer().getName());
-                    this.plugin.setDemandChest(map);
+                    ChestLocker.getInstance().getDemandChest().remove(event.getPlayer().getName());
                 }
             }else{
                 event.getPlayer().sendPopup(TextFormat.GRAY+"查询失败,点击的不是箱子");
