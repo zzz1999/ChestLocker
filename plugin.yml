@@ -24,19 +24,19 @@ version: "1.0.0"
 #  usage: "/chestshare <取消共享人的名字>"
 
 permissions:
- ChestLocker.commands.chestlock:
+ ChestLocker.commands.ChestLock:
   default: true
   description: "锁住一个箱子的权限"
- ChestLocker.commands.chestshare:
+ ChestLocker.commands.ChestShare:
   default: true
   description: "共享箱子的权限"
- ChestLocker.commands.chestunlock:
+ ChestLocker.commands.ChestUnlock:
   default: true
   description: "解锁一个箱子的权限"
- ChestLocker.commands.chestunshare:
+ ChestLocker.commands.ChestUnshare:
   default: true
   description: "取消分享箱子的权限"
- ChestLocker.commands.chestinfo:
+ ChestLocker.commands.ChestInfo:
   default: true
   description: "检测一个箱子所对应的关联"
 

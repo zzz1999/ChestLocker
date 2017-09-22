@@ -7,10 +7,7 @@ import cn.nukkit.level.Position;
 
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import net.mcbbs.zzz1999.ChestLocker.Command.ChestLock;
-import net.mcbbs.zzz1999.ChestLocker.Command.ChestShare;
-import net.mcbbs.zzz1999.ChestLocker.Command.ChestUnlock;
-import net.mcbbs.zzz1999.ChestLocker.Command.ChestUnshare;
+import net.mcbbs.zzz1999.ChestLocker.Command.*;
 
 
 import java.util.*;
@@ -19,14 +16,6 @@ import java.util.*;
 public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukkit.event.Listener{
 
     private static ChestLocker instance = null;
-
-    private final static Byte CHEST_OWNER_UNDEFINED = 0;
-    private final static Byte CHEST_OWNER_DEFINED = 1;
-
-    private final static Byte CHEST_GUEST_UNDEFINED = 0;
-    private final static Byte CHEST_GUEST_DEFINED = 1;
-
-
 
     private Map<String,Boolean> LockSetting = new HashMap<>();
     private Map<String,String> ShareSetting = new HashMap<>();
@@ -40,6 +29,7 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
     public void onEnable(){
         instance = this;
         this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
+        this.getServer().getCommandMap().register("chestinfo",new ChestInfo(this));
         this.getServer().getCommandMap().register("chestlock", new ChestLock(this));
         this.getServer().getCommandMap().register("chestshare", new ChestShare(this));
         this.getServer().getCommandMap().register("chestunlock", new ChestUnlock(this));
@@ -109,9 +99,8 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
         return null;
     }
     @Deprecated
-    //神tm我不锁就炸了
     public Boolean isChestOwner(BlockEntityChest chest,String name ){
-        return chest.namedTag.exist("Owner") && chest.namedTag.getString("OLwner").equals(name);
+        return chest.namedTag.exist("Owner") && chest.namedTag.getString("Owner").equals(name);
     }
     public Boolean isChestGuest(BlockEntityChest chest ,String name){
         return chest.namedTag.exist("Guest") && chest.namedTag.getList("Guest").getAll().contains(new StringTag("", name));
@@ -122,6 +111,13 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
         }
         return null;
     }
+
+    /**
+     * 检测Player 是否有权限操作这个箱子
+     * @param chest
+     * @param name
+     * @return
+     */
     public boolean testPermission(BlockEntityChest chest,String name) {
         if(chest.namedTag.exist("Owner")) {
             return Objects.equals(chest.namedTag.getString("Owner"), name) || chest.namedTag.getList("Guest").getAll().contains(new StringTag("", name));

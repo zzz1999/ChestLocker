@@ -13,7 +13,7 @@ public class ChestInfo extends Command {
     public ChestInfo(ChestLocker owner) {
         super("chestinfo", "检测一个箱子所对应的关联", "/chestinfo", new String[]{"ci"});
         this.plugin=owner;
-        this.setPermission("ChestLocker.commands.chestinfo");
+        this.setPermission("ChestLocker.commands.ChestInfo");
         this.commandParameters.clear();
 
     }

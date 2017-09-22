@@ -3,3 +3,45 @@ author: zzz1999
 main: net.mcbbs.zzz1999.ChestLocker.ChestLocker
 api: ["1.0.0"]
 version: "1.0.0"
+#commands:
+# chestlock:
+#  description: "锁住一个箱子"
+#  aliases: ["cl","chestlock"]
+#  permission: ChestLocker.commands.chestlock
+#  usage: "/chestlock 点击你要锁的箱子"
+# chestshare:
+#  description: "共享一个你锁住的箱子"
+#  aliases: ["cs","chestshare"]
+#  permission: ChestLocker.commands.chestshare
+#  useage: "/chestshare <共享给谁>"
+# chestunlock:
+#  description: "解锁一个你曾经锁住的箱子"
+#  permission: ChestLocker.commands.chestunlock
+#  usage: "/chestunlock 点击你要解锁的箱子"
+# chestunshare:
+#  description: "取消给某个玩家的共享"
+#  permission: ChestLocker.commands.chestunshare
+#  usage: "/chestshare <取消共享人的名字>"
+
+permissions:
+ ChestLocker.commands.ChestLock:
+  default: true
+  description: "锁住一个箱子的权限"
+ ChestLocker.commands.ChestShare:
+  default: true
+  description: "共享箱子的权限"
+ ChestLocker.commands.ChestUnlock:
+  default: true
+  description: "解锁一个箱子的权限"
+ ChestLocker.commands.ChestUnshare:
+  default: true
+  description: "取消分享箱子的权限"
+ ChestLocker.commands.ChestInfo:
+  default: true
+  description: "检测一个箱子所对应的关联"
+
+
+
+
+
+  

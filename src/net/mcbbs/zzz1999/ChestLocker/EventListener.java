@@ -13,6 +13,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.scheduler.PluginTask;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,10 +24,10 @@ public class EventListener implements Listener {
 
     private ChestLocker plugin;
 
-    /*private ArrayList<Integer> ChestList = new ArrayList<Integer>(){{
+    private ArrayList<Integer> ChestList = new ArrayList<Integer>(){{
         add(Block.CHEST);
         add(Block.TRAPPED_CHEST);
-    }};*/
+    }};
 
 
 
@@ -168,7 +169,6 @@ public class EventListener implements Listener {
                             tag.remove(unshare);
                             chest.namedTag.getList("Guest").setAll(tag);
                             player.sendMessage(TextFormat.GOLD+"[ChestLocker] 以将 [ "+unshare+" ] 移除出箱子共享列表中");
-                            //TODO test whether the remove/add were succeed
                             plugin.getUnshareSetting().remove(unshare);
                             player.sendMessage(TextFormat.AQUA+"以退出取消箱子共享模式");
 
@@ -219,10 +219,12 @@ public class EventListener implements Listener {
                     try {
                         if (((BlockEntityChest) block.getLevel().getBlockEntity(block)).getPair() != null) {
                             BlockEntityChest chestPair = ((BlockEntityChest) block.getLevel().getBlockEntity(block)).getPair();
-                            //BlockEntityChest chest = (BlockEntityChest)block.getLevel().getBlockEntity(block);
+                            BlockEntityChest chest = (BlockEntityChest)block.getLevel().getBlockEntity(block);
                             if (chestPair.namedTag.exist("Owner") && !Objects.equals(chestPair.namedTag.getString("Owner"), event.getPlayer().getName())) {
                                 block.getLevel().useBreakOn(block);
                                 event.getPlayer().sendMessage(TextFormat.YELLOW+"[ChestLocker] 你无法在这里放置箱子，因为这个箱子所连接的另一个箱子不属于你");
+                            }else{
+                                ChestLocker.getInstance().CopyChestInformation(chestPair,chest);
                             }
                         }
                     }catch(Exception ignore){
@@ -268,4 +270,5 @@ public class EventListener implements Listener {
             }
         }
     }
+
 }
