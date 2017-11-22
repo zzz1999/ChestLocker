@@ -5,7 +5,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.TextFormat;
 import net.mcbbs.zzz1999.ChestLocker.ChestLocker;
 
-import java.util.Map;
 
 public class ChestUnlock extends Command {
 
@@ -15,7 +14,7 @@ public class ChestUnlock extends Command {
         super("chestunlock", "解锁一个你曾经锁住的箱子", "/chestunlock 点击你要解锁的箱子",new String[]{"解锁","解锁箱子","unlock"});
         this.plugin = owner;
         this.setPermission("ChestLocker.commands.ChestUnlock");
-        this.commandParameters.clear();
+
 
     }
 

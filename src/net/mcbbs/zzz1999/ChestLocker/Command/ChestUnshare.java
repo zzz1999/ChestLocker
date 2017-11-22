@@ -6,8 +6,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.utils.TextFormat;
 import net.mcbbs.zzz1999.ChestLocker.ChestLocker;
 
-import javax.xml.soap.Text;
-import java.util.Map;
 
 public class ChestUnshare extends Command {
 
@@ -17,9 +15,9 @@ public class ChestUnshare extends Command {
         super("chestunshare","取消给某个玩家的共享","/chestshare <取消共享人的名字>",new String[]{"unshare"});
         this.setPermission("ChestLocker.commands.ChestUnshare");
         this.plugin = owner;
-        /*this.commandParameters.put("default",new CommandParameter[]{
+        this.commandParameters.put("default",new CommandParameter[]{
                 new CommandParameter("Player",CommandParameter.ARG_TYPE_STRING)
-        });*/
+        });
 
     }
 

@@ -4,7 +4,6 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import net.mcbbs.zzz1999.ChestLocker.ChestLocker;
 
-import java.util.Map;
 
 public class ChestLock extends Command {
 
@@ -14,7 +13,6 @@ public class ChestLock extends Command {
         super("chestlock","锁住一个箱子","/chestlock 点击你要锁的箱子",new String[]{"cl","lock","锁箱子","锁"});
         this.plugin = owner;
         this.setPermission("ChestLocker.commands.ChestLock");
-        this.commandParameters.clear();
 
 
     }

@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.*;
 import cn.nukkit.event.player.PlayerInteractEvent;
@@ -13,12 +14,12 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.scheduler.PluginTask;
 import cn.nukkit.utils.TextFormat;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import static cn.nukkit.event.EventPriority.HIGH;
+
 
 public class EventListener implements Listener {
 
@@ -35,20 +36,21 @@ public class EventListener implements Listener {
     EventListener(ChestLocker owner){
         this.plugin = owner;
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
     public void onChestLock(PlayerInteractEvent event){
         if(plugin.getLockSetting().containsKey(event.getPlayer().getName())){
+            event.setCancelled();
             Block block = event.getBlock();
             Player player = event.getPlayer();
-            if(block.getId() == Block.CHEST){
+            if(block.getId()==Block.CHEST){
                 BlockEntity chestP = block.getLevel().getBlockEntity(block);
                 if(chestP instanceof BlockEntityChest){
                     BlockEntityChest chest = (BlockEntityChest)chestP;
                     if(chest.namedTag.contains("Owner")){
-                        if(Objects.equals(player.getName(),chest.namedTag.getString("Owner"))){
+                        if(Objects.equals(player.getName(),ChestLocker.getInstance().getChestOwner(chest))){
                             player.sendMessage(TextFormat.GRAY+"[ChestLocker] 这个箱子已经被你锁上过了");
                         }else{
-                            player.sendMessage(TextFormat.GRAY+"[ChestLocker] 这个箱子已经被[ "+chest.namedTag.getString("Owner")+" ]锁上了，你无法再次锁定");
+                            player.sendMessage(TextFormat.GRAY+"[ChestLocker] 这个箱子已经被[ "+ChestLocker.getInstance().getChestOwner(chest)+" ]锁上了，你无法再次锁定");
                         }
                     }else{
                         chest.namedTag.putString("Owner",player.getName());
@@ -72,24 +74,24 @@ public class EventListener implements Listener {
 
 
 
-    @EventHandler
-    @SuppressWarnings("unchecked")
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
     public void onChestShare(PlayerInteractEvent event){
         if(plugin.getShareSetting().containsKey(event.getPlayer().getName())){
+            event.setCancelled();
             Block block = event.getBlock();
             Player player = event.getPlayer();
-            if(block.getId() == Block.CHEST){
+            if(block.getId()==Block.CHEST){
                 BlockEntity chestP = block.getLevel().getBlockEntity(block);
                 if(chestP instanceof BlockEntityChest){
                     BlockEntityChest chest = (BlockEntityChest)chestP;
                     if(chest.namedTag.contains("Owner")){
-                        if(!Objects.equals(player.getName(),chest.namedTag.getString("Owner"))){
+                        if(!Objects.equals(player.getName(), ChestLocker.getInstance().getChestOwner(chest))){
                             player.sendMessage(TextFormat.YELLOW+"[ChestLocker] 你不是这个箱子的拥有者");
                             return;
                         }
                         String invite = plugin.getShareSetting().get(player.getName());
                         if(chest.namedTag.contains("Guest")){
-                            List list = chest.namedTag.getList("Guest").getAll();
+                            List<StringTag> list = chest.namedTag.getList("Guest",StringTag.class).getAll();
 
                             if(list.contains(new StringTag("",player.getName()))){
                                 player.sendMessage(TextFormat.GRAY+"[ChestLocker] 玩家[ "+ invite+" ] 以存在于共享列表中");
@@ -97,19 +99,19 @@ public class EventListener implements Listener {
                                 /*ArrayList<StringTag> guest = (ArrayList<StringTag>) chest.namedTag.getList("Guest").getAll();
                                 guest.add(new StringTag("",invite));
                                 chest.namedTag.getList("Guest").setAll(guest);*/
-                                List tag = chest.namedTag.getList("Guest").getAll();
+                                List<StringTag> tag = chest.namedTag.getList("Guest",StringTag.class).getAll();
                                 tag.add(new StringTag("" ,invite));
-                                chest.namedTag.getList("Guest").setAll(tag);
+                                chest.namedTag.getList("Guest",StringTag.class).setAll(tag);
                                 player.sendMessage(TextFormat.GOLD+"[ChestLocker] 已将 [ "+invite+" ] 列入共享列表");
                                 plugin.getShareSetting().remove(player.getName());
 
                                 player.sendMessage(TextFormat.AQUA+"[ChestLocker] 以退出设置箱子共享模式");
                             }
                         }else{
-                            chest.namedTag.putList(new ListTag<>("Guest"));
-                            List tag = chest.namedTag.getList("Guest").getAll();
+                            chest.namedTag.putList(new ListTag<StringTag>("Guest"));
+                            List<StringTag> tag = chest.namedTag.getList("Guest",StringTag.class).getAll();
                             tag.add(new StringTag("",invite));
-                            chest.namedTag.getList("Guest").setAll(tag);
+                            chest.namedTag.getList("Guest",StringTag.class).setAll(tag);
                             player.sendMessage(TextFormat.GOLD+"[ChestLocker] 以设置共享玩家  [ "+invite+" ] .");
                             plugin.getShareSetting().remove(player.getName());
 
@@ -123,19 +125,19 @@ public class EventListener implements Listener {
         }
     }
     @EventHandler
-    @SuppressWarnings("unchecked")
     public void onUnlockChest(PlayerInteractEvent event){
         if(plugin.getUnLockSetting().containsKey(event.getPlayer().getName())){
+            event.setCancelled();
             Block block = event.getBlock();
             Player player = event.getPlayer();
-            if(block.getId() == Block.CHEST){
+            if(block.getId()==Block.CHEST){
                 BlockEntity chestP = block.getLevel().getBlockEntity(block);
                 if(chestP instanceof BlockEntityChest){
                     BlockEntityChest chest = (BlockEntityChest)chestP;
-                    if(Objects.equals(player.getName(),chest.namedTag.getString("Owner"))){
+                    if(Objects.equals(player.getName(),ChestLocker.getInstance().getChestOwner(chest))){
                         chest.namedTag.remove("Owner");
                         chest.namedTag.remove("Guest");
-                        for(Player p:chest.getInventory().getViewers()){
+                        for(Player p : chest.getInventory().getViewers()){
                             chest.getInventory().onClose(p);
                         }
                         player.sendMessage(TextFormat.RED+"[ChestLocker] 你以解锁该箱子，并且删除所有共享该箱子的玩家信息");
@@ -151,23 +153,23 @@ public class EventListener implements Listener {
         }
     }
     @EventHandler
-    @SuppressWarnings("unchecked")
     public void onUnshareChest(PlayerInteractEvent event){
         if(plugin.getUnshareSetting().containsKey(event.getPlayer().getName())){
+            event.setCancelled();
             Block block = event.getBlock();
             Player player = event.getPlayer();
             String unshare = this.plugin.getUnshareSetting().get(player.getName());
-            if(block .getId()==Block.CHEST){
-                BlockEntity chestP =block.getLevel().getBlockEntity(block);
+            if(block.getId()==Block.CHEST){
+                BlockEntity chestP = block.getLevel().getBlockEntity(block);
                 if(chestP instanceof BlockEntityChest){
                     BlockEntityChest chest = (BlockEntityChest) chestP;
                     if(Objects.equals(chest.namedTag.getString("Owner"),player.getName())){
-                        List list =  chest.namedTag.getList("Guest").getAll();
+                        List<StringTag> list =  chest.namedTag.getList("Guest",StringTag.class).getAll();
                         if(list.contains(new StringTag("",unshare))){
                             //list.remove(new StringTag("",unshare));
-                            List tag = chest.namedTag.getList("Guest").getAll();
-                            tag.remove(unshare);
-                            chest.namedTag.getList("Guest").setAll(tag);
+                            List<StringTag> tag = chest.namedTag.getList("Guest",StringTag.class).getAll();
+                            tag.remove(new StringTag("",unshare));
+                            chest.namedTag.getList("Guest",StringTag.class).setAll(tag);
                             player.sendMessage(TextFormat.GOLD+"[ChestLocker] 以将 [ "+unshare+" ] 移除出箱子共享列表中");
                             plugin.getUnshareSetting().remove(unshare);
                             player.sendMessage(TextFormat.AQUA+"以退出取消箱子共享模式");
@@ -185,17 +187,18 @@ public class EventListener implements Listener {
     public void DemandChest(PlayerInteractEvent event){
         if(ChestLocker.getInstance().getDemandChest().containsKey(event.getPlayer().getName())){
             if(event.getBlock().getId() == Block.CHEST){
+                event.setCancelled();
                 Block block = event.getBlock();
                 if(block.getLevel().getBlockEntity(block) instanceof BlockEntityChest){
                     BlockEntityChest chest = (BlockEntityChest) block.getLevel().getBlockEntity(block);
                     Player p = event.getPlayer();
-                    p.sendMessage(TextFormat.LIGHT_PURPLE+"----------------\n["+block.getName()+"]"+block.toString() +" 箱子信息如下:");
-                    p.sendMessage(TextFormat.LIGHT_PURPLE+"箱子所有者: ["+(chest.namedTag.exist("Owner") ? chest.namedTag.getString("Owner") : "不存在的")+"]");
+                    p.sendMessage(TextFormat.LIGHT_PURPLE+"----------------\n["+block.getName()+"]"+" 箱子信息如下:");
+                    p.sendMessage(TextFormat.LIGHT_PURPLE+"箱子所有者: ["+(chest.namedTag.exist("Owner") ? chest.namedTag.getString("Owner") : "无主")+"]");
                     if(chest.namedTag.exist("Guest")) {
-                        List list = chest.namedTag.getList("Guest").getAll();
+                        List<StringTag> list = chest.namedTag.getList("Guest",StringTag.class).getAll();
                         p.sendMessage(TextFormat.LIGHT_PURPLE+"箱子共享者:");
-                        for (Object aList : list) {
-                            p.sendMessage(TextFormat.LIGHT_PURPLE+String.valueOf(aList));
+                        for (StringTag aList : list) {
+                            p.sendMessage(TextFormat.LIGHT_PURPLE+aList.data);
                         }
 
                     }
@@ -208,7 +211,7 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler(priority = HIGH)
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
     public void PlaceChest(BlockPlaceEvent event){
         Block block = event.getBlock();
         if(block.getId() == Block.CHEST)
@@ -220,11 +223,13 @@ public class EventListener implements Listener {
                         if (((BlockEntityChest) block.getLevel().getBlockEntity(block)).getPair() != null) {
                             BlockEntityChest chestPair = ((BlockEntityChest) block.getLevel().getBlockEntity(block)).getPair();
                             BlockEntityChest chest = (BlockEntityChest)block.getLevel().getBlockEntity(block);
-                            if (chestPair.namedTag.exist("Owner") && !Objects.equals(chestPair.namedTag.getString("Owner"), event.getPlayer().getName())) {
-                                block.getLevel().useBreakOn(block);
-                                event.getPlayer().sendMessage(TextFormat.YELLOW+"[ChestLocker] 你无法在这里放置箱子，因为这个箱子所连接的另一个箱子不属于你");
-                            }else{
-                                ChestLocker.getInstance().CopyChestInformation(chestPair,chest);
+                            if (chestPair.namedTag.exist("Owner")) {
+                                if(!Objects.equals(ChestLocker.getInstance().getChestOwner(chest), event.getPlayer().getName())){
+                                    block.getLevel().useBreakOn(block);
+                                    event.getPlayer().sendMessage(TextFormat.YELLOW + "[ChestLocker] 你无法在这里放置箱子，因为这个箱子所连接的另一个箱子不属于你");
+                                }else{
+                                    ChestLocker.getInstance().CopyChestInformation(chestPair,chest);
+                                }
                             }
                         }
                     }catch(Exception ignore){
@@ -234,11 +239,8 @@ public class EventListener implements Listener {
             },1);
 
     }
-    @EventHandler(priority = HIGH)
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
     public void openChestInventory(PlayerInteractEvent event){
-        if(event.isCancelled()){
-            return;
-        }
         if(event.getBlock().getId() == Block.CHEST){
             Block block = event.getBlock();
             BlockEntityChest chest = (BlockEntityChest) block.getLevel().getBlockEntity(block);
@@ -247,17 +249,22 @@ public class EventListener implements Listener {
                 chestPair = chest.getPair();
             }
             if(chest.namedTag.exist("Owner")){
-                if(!ChestLocker.getInstance().testPermission(chest,event.getPlayer())){
-                    if(!ChestLocker.getInstance().testPermission(chestPair,event.getPlayer())){
-
-                        event.setCancelled();
-                        event.getPlayer().sendMessage(TextFormat.RED+"[ChestLocker] 你没有打开这个箱子的权限");
-                    }
+                if(!ChestLocker.getInstance().testPermission(chest,event.getPlayer())) {
+                    event.setCancelled();
+                    event.getPlayer().sendMessage(TextFormat.RED+"[ChestLocker] 你没有打开这个箱子的权限");
                 }
+                if(chestPair!=null && !ChestLocker.getInstance().testPermission(chestPair,event.getPlayer())) {
+                    event.setCancelled();
+                    event.getPlayer().sendMessage(TextFormat.RED+"[ChestLocker] 你没有打开这个箱子的相邻箱子的权限");
+                }
+
+
+
+
             }
         }
     }
-    @EventHandler(priority = HIGH)
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
     public void onDestoryChest(BlockBreakEvent event){
         if(event.getBlock().getId()==Block.CHEST){
             Block block = event.getBlock();

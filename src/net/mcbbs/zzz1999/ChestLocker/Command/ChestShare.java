@@ -7,8 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.utils.TextFormat;
 import net.mcbbs.zzz1999.ChestLocker.ChestLocker;
 
-import java.util.Arrays;
-import java.util.Map;
 
 public class ChestShare extends Command {
 
@@ -18,9 +16,9 @@ public class ChestShare extends Command {
         super("chestshare","共享一个你锁住的箱子","/chestshare <共享给谁>",new String[]{"cs","分享","分享箱子","share"});
         this.plugin = owner;
         this.setPermission("ChestLocker.commands.ChestShare");
-        /*this.commandParameters.put("default",new CommandParameter[]{
+        this.commandParameters.put("default",new CommandParameter[]{
                 new CommandParameter("Player",CommandParameter.ARG_TYPE_STRING)
-        });*/
+        });
 
 
     }
@@ -30,7 +28,6 @@ public class ChestShare extends Command {
         if(!this.testPermission(sender)) {
             return true;
         }
-        this.plugin.getLogger().info(Arrays.toString(args));
         if(args.length >= 1){
             String invite = args[0];
             if(this.plugin.getShareSetting().containsKey(sender.getName())){
@@ -44,9 +41,7 @@ public class ChestShare extends Command {
             }
         }else if (args.length == 0){
             if(this.plugin.getShareSetting().containsKey(sender.getName())){
-                Map<String,String> map = this.plugin.getShareSetting();
-                map.remove(sender.getName());
-                this.plugin.setShareSetting(map);
+                this.plugin.getShareSetting().remove(sender.getName());
                 sender.sendMessage(TextFormat.GRAY+"[ChestLocker] 你已退出设置箱子共享状态");
             }else{
                 sender.sendMessage(TextFormat.YELLOW+"[ChestLocker] "+this.getUsage());
