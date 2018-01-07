@@ -39,6 +39,9 @@ permissions:
  ChestLocker.commands.ChestInfo:
   default: true
   description: "检测一个箱子所对应的关联"
+ ChestLocker.commands.ChestCustom:
+  default: true
+  description: "设置一个箱子的CustomName"
 
 
 

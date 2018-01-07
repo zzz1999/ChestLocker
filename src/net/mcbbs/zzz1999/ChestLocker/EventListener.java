@@ -13,6 +13,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.scheduler.PluginTask;
 import cn.nukkit.utils.TextFormat;
+import me.onebone.economyapi.EconomyAPI;
 
 
 import java.util.ArrayList;
@@ -273,6 +274,30 @@ public class EventListener implements Listener {
                 if(ChestLocker.getInstance().getChestOwner(chest)!=null && !Objects.equals(ChestLocker.getInstance().getChestOwner(chest),event.getPlayer().getName())){
                     event.setCancelled();
                     event.getPlayer().sendMessage(TextFormat.RED+"[ChestLocker] 这个箱子不属于你无法破坏");
+                }
+            }
+        }
+    }
+
+
+
+    @EventHandler(priority = EventPriority.NORMAL,ignoreCancelled = true)
+    public void onCustomName(PlayerInteractEvent event){
+        if(event.getBlock().getId() == Block.CHEST) {
+            if (ChestLocker.getInstance().getCustomName().containsKey(event.getPlayer().getName())) {
+                Block block = event.getBlock();
+                BlockEntity chestP = event.getBlock().getLevel().getBlockEntity(block);
+                if(chestP instanceof BlockEntityChest){
+                    BlockEntityChest chest = (BlockEntityChest)chestP;
+                    if(EconomyAPI.getInstance().myMoney(event.getPlayer()) >= 500) {
+                        chest.setName(ChestLocker.getInstance().getCustomName().get(event.getPlayer().getName()));
+                        event.getPlayer().sendMessage("设置成功");
+                        ChestLocker.getInstance().getCustomName().remove(event.getPlayer().getName());
+                        EconomyAPI.getInstance().reduceMoney(event.getPlayer(),500);
+                    }else{
+                        event.getPlayer().sendMessage("你没有足够的金钱");
+                        ChestLocker.getInstance().getCustomName().remove(event.getPlayer().getName());
+                    }
                 }
             }
         }

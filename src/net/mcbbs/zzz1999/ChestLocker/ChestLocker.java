@@ -22,17 +22,23 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
     private Map<String,Boolean> UnlockSetting = new HashMap<>();
     private Map<String,String> UnshareSetting = new HashMap<>();
     private Map<String,Boolean> DemandChest = new HashMap<>();
+    private Map<String,String> CustomName = new HashMap<>();
+
+    /**
+     * 这个结构烂到爆炸 我都懒得改了 就这样写吧
+     */
 
     @Override
     public void onEnable(){
         instance = this;
         this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
 
-        this.getServer().getCommandMap().register("chestinfo",new ChestInfo(this));
-        this.getServer().getCommandMap().register("chestlock", new ChestLock(this));
-        this.getServer().getCommandMap().register("chestshare", new ChestShare(this));
-        this.getServer().getCommandMap().register("chestunlock", new ChestUnlock(this));
-        this.getServer().getCommandMap().register("chestunshare", new ChestUnshare(this));
+        this.getServer().getCommandMap().register("ChestLocker",new ChestInfo(this));
+        this.getServer().getCommandMap().register("ChestLocker", new ChestLock(this));
+        this.getServer().getCommandMap().register("ChestLocker", new ChestShare(this));
+        this.getServer().getCommandMap().register("ChestLocker", new ChestUnlock(this));
+        this.getServer().getCommandMap().register("ChestLocker", new ChestUnshare(this));
+        this.getServer().getCommandMap().register("ChestLocker",new ChestCustom(this));
 
     }
 
@@ -93,6 +99,7 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
 
 
 
+
     public String getChestOwner(BlockEntityChest chest){
         if(chest.namedTag.contains("Owner")){
             return chest.namedTag.getString("Owner");
@@ -150,5 +157,11 @@ public class ChestLocker extends cn.nukkit.plugin.PluginBase implements cn.nukki
     }
 
 
+    public Map<String, String> getCustomName() {
+        return CustomName;
+    }
 
+    public void setCustomName(Map<String, String> customName) {
+        CustomName = customName;
+    }
 }
